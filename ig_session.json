@@ -1,0 +1,59 @@
+{
+    "uuids": {
+        "phone_id": "69576ba7-4c24-4f48-ad16-960fcae7f32d",
+        "uuid": "90a26ae2-a148-48e7-850f-0c67f14a2f2a",
+        "client_session_id": "60a6de7a-fd59-4743-becd-d8861b801d8e",
+        "advertising_id": "f01f30d8-ac27-4eb3-b73d-a6d15dfddbcc",
+        "android_device_id": "android-c0b76f737beb0840",
+        "request_id": "3ae0308e-0bb5-48cd-a4f9-d32820297bfc",
+        "tray_session_id": "6789c96c-4df5-4d75-a0c7-aaa5c72104be"
+    },
+    "mid": null,
+    "ig_u_rur": null,
+    "ig_www_claim": null,
+    "authorization_data": {
+        "ds_user_id": "257526325",
+        "sessionid": "257526325%3ACVxMW89V0XMq8z%3A24%3AAYgipjLUBjpr2jlPbiVY15aQcQNY5Gd5XaWubTx77Q",
+        "should_use_header_over_cookies": true
+    },
+    "cookies": {
+        "sessionid": "257526325%3ACVxMW89V0XMq8z%3A24%3AAYgipjLUBjpr2jlPbiVY15aQcQNY5Gd5XaWubTx77Q",
+        "ds_user_id": "257526325"
+    },
+    "last_login": null,
+    "device_settings": {
+        "android_version": 34,
+        "android_release": "14",
+        "dpi": "480dpi",
+        "resolution": "1344x2992",
+        "manufacturer": "Google/google",
+        "device": "husky",
+        "model": "Pixel 8 Pro",
+        "cpu": "husky",
+        "app_version": "428.0.0.47.67",
+        "version_code": "961145276",
+        "bloks_versioning_id": "7189b949425f9bf80ea8bd880cf5a3080b292d9b1c4b38a18d112f7c4b71e7a8"
+    },
+    "user_agent": "Instagram 428.0.0.47.67 Android (34/14; 480dpi; 1344x2992; Google/google; Pixel 8 Pro; husky; husky; en_US; 961145276)",
+    "country": "US",
+    "country_code": 1,
+    "locale": "en_US",
+    "timezone_offset": -14400,
+    "timezone_name": "GMT-04:00",
+    "push_disabled": true,
+    "request_timeout": 1,
+    "public_request_retries_count": 3,
+    "public_request_retries_timeout": 2,
+    "session_retry_total": 3,
+    "session_retry_backoff_factor": 2,
+    "session_retry_statuses": [
+        429,
+        500,
+        502,
+        503,
+        504
+    ],
+    "public_transport": "requests",
+    "public_transport_impersonate": "chrome136",
+    "tls_verify": true
+}
