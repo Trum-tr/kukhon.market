@@ -40,6 +40,7 @@ import requests
 # ── Конфиг ────────────────────────────────────────────────────────────────
 IG_USERNAME   = os.getenv("IG_USERNAME", "kukhon.market")
 IG_PASSWORD   = os.getenv("IG_PASSWORD")
+IG_PROXY      = os.getenv("IG_PROXY", "")
 TG_TOKEN      = os.getenv("TELEGRAM_TOKEN")
 TG_CHAT_ID    = os.getenv("TELEGRAM_CHAT_ID")
 
@@ -249,6 +250,9 @@ def _backup_session():
 def build_client():
     cl = Client()
     cl.delay_range = [2, 5]
+    if IG_PROXY:
+        cl.set_proxy(IG_PROXY)
+        print(f"  Прокси: {IG_PROXY.split('@')[-1]}")
 
     # Попытка с сохранённой сессией
     if SESSION_FILE.exists():
