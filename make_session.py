@@ -103,30 +103,45 @@ def login_with_retry():
             return False
 
     except ChallengeRequired:
-        print("\n⚠️  Instagram требует подтверждение аккаунта (Challenge)")
-        print("  Выбери способ:")
-        print("  1 — SMS на телефон")
-        print("  2 — Email")
-        choice = input("  Твой выбор (1 или 2): ").strip()
-        try:
-            cl.challenge_resolve(cl.last_json)
-        except Exception:
-            pass
+        print("\n⚠️  Instagram требует подтверждение аккаунта")
 
+        # Показываем что именно требует Instagram
         try:
-            # Запрашиваем отправку кода
-            method = 1 if choice == "1" else 0
-            cl.challenge_send_code(method)
-            code = input(f"  Введи код из {'SMS' if method == 1 else 'Email'}: ").strip()
-            cl.challenge_resolve(cl.last_json, security_code=code)
-            return True
+            last = cl.last_json
+            challenge = last.get("challenge", {})
+            print(f"\n  Тип challenge: {challenge.get('challengeType', 'неизвестно')}")
+            print(f"  URL: {challenge.get('url', 'нет')}")
+            api_path = challenge.get("api_path", "")
+            print(f"  API path: {api_path}")
+
+            # Пробуем открыть challenge URL в браузере
+            url = challenge.get("url", "")
+            if url:
+                print(f"\n  Открой эту ссылку в браузере и подтверди вход:")
+                print(f"  https://www.instagram.com{url}")
+                input("\n  Нажми Enter после подтверждения в браузере...")
+                # Пробуем войти снова
+                cl2 = Client()
+                cl2.delay_range = [2, 5]
+                cl2.login(USERNAME, PASSWORD)
+                return True
+        except Exception as ex:
+            print(f"  Детали challenge: {ex}")
+
+        # Последний вариант — ввод кода вручную
+        print("\n  Если пришёл код — введи его:")
+        try:
+            code = input("  Код (или Enter чтобы пропустить): ").strip()
+            if code:
+                cl.challenge_resolve(cl.last_json, security_code=code)
+                return True
         except Exception as e:
-            print(f"❌ Ошибка Challenge: {e}")
-            print()
-            print("  Попробуй:")
-            print("  1. Открой Instagram на iPhone и подтверди вход")
-            print("  2. Затем запусти этот скрипт ещё раз")
-            return False
+            print(f"  Ошибка: {e}")
+
+        print("\n  ❌ Не удалось пройти проверку.")
+        print("  Зайди в Instagram на iPhone и подтверди вход вручную,")
+        print("  затем запусти скрипт ещё раз.")
+        return False
 
     except SelectContactPointRecoveryForm as e:
         print(f"\n⚠️  Instagram требует восстановление аккаунта: {e}")
