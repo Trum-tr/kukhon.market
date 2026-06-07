@@ -31,6 +31,7 @@ SESSION_PATH = Path(__file__).parent / "ig_session.json"
 load_dotenv(ENV_PATH)
 USERNAME = os.getenv("IG_USERNAME", "kukhon.market")
 PASSWORD = os.getenv("IG_PASSWORD", "")
+PROXY    = os.getenv("IG_PROXY", "")
 
 if not PASSWORD:
     print("❌ IG_PASSWORD не найден в .env")
@@ -41,10 +42,9 @@ print("  Instagram Session Maker")
 print("=" * 55)
 print(f"  Аккаунт : @{USERNAME}")
 print(f"  Сессия  : {SESSION_PATH}")
+if PROXY:
+    print(f"  Прокси  : {PROXY.split('@')[-1]}")
 print("=" * 55)
-print()
-print("⚠️  ВАЖНО: Mac должен быть подключён к iPhone Hotspot")
-print("   (не к офисному/серверному Wi-Fi)")
 print()
 input("  Нажми Enter чтобы начать логин...")
 print()
@@ -52,6 +52,9 @@ print()
 # ── Клиент ──────────────────────────────────────────────────────────────────
 cl = Client()
 cl.delay_range = [2, 5]
+if PROXY:
+    cl.set_proxy(PROXY)
+    print(f"  Прокси подключён: {PROXY.split('@')[-1]}")
 
 
 def challenge_code_handler(username, choice):
