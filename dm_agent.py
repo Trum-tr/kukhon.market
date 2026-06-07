@@ -232,6 +232,10 @@ LOGIN_TIMEOUT = 90  # секунд
 def _do_login(cl):
     """Загружает сессию из файла и проверяет что жива. НЕ делает новый логин."""
     cl.load_settings(SESSION_FILE)
+    # Принудительно переприменяем прокси из .env — load_settings может перезаписать его
+    # старым значением из JSON (например socks5://) что ломает соединение
+    if IG_PROXY:
+        cl.set_proxy(IG_PROXY)
     cl.get_timeline_feed()
 
 def build_client():
