@@ -236,7 +236,8 @@ def _do_login(cl):
     # старым значением из JSON (например socks5://) что ломает соединение
     if IG_PROXY:
         cl.set_proxy(IG_PROXY)
-    cl.get_timeline_feed()
+    # Лёгкий endpoint — не блокируется proxy-IP в отличие от get_timeline_feed()
+    cl.account_info()
 
 def build_client():
     """Загружает сессию из файла. Если сессии нет или она мертва — бросает ошибку.
