@@ -1257,8 +1257,6 @@ def pull_instagram_stats(state: dict) -> dict:
         SESSION = BASE / "ig_session.json"
         cl = Client()
         cl.delay_range = [2, 4]
-        if IG_PROXY:
-            cl.set_proxy(IG_PROXY)
         if SESSION.exists():
             cl.load_settings(SESSION)
         cl.login(IG_USER, IG_PASS)
@@ -1492,8 +1490,6 @@ def run_auto_diagnostics(state: dict, notify_chat: str = None) -> dict:
         from concurrent.futures import ThreadPoolExecutor, TimeoutError as FT
         _cl = IgClient()
         _cl.delay_range = [1, 2]
-        if IG_PROXY:
-            _cl.set_proxy(IG_PROXY)
         def _ig_test():
             _cl.load_settings(BASE / "ig_session.json")
             _cl.get_timeline_feed()
