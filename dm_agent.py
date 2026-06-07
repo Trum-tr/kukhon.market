@@ -229,65 +229,33 @@ def log_lead(username, trigger):
 # ── Instagram Client ──────────────────────────────────────────────────────
 LOGIN_TIMEOUT = 90  # секунд
 
-def _do_login(cl, fresh=False):
-    """Выполняется в отдельном потоке с таймаутом."""
-    if not fresh and SESSION_FILE.exists():
-        # Восстанавливаем из сессии БЕЗ нового логина в Instagram API
-        cl.load_settings(SESSION_FILE)
-        cl.get_timeline_feed()   # только проверяем что сессия жива
-        return
-    # Полный новый логин (только если нет сессии)
-    cl.login(IG_USERNAME, IG_PASSWORD)
-    cl.dump_settings(SESSION_FILE)
-
-def _backup_session():
-    """Создаёт резервную копию сессии перед удалением."""
-    if SESSION_FILE.exists():
-        backup = SESSION_FILE.parent / f"ig_session_backup_{int(time.time())}.json"
-        import shutil
-        shutil.copy2(SESSION_FILE, backup)
+def _do_login(cl):
+    """Загружает сессию из файла и проверяет что жива. НЕ делает новый логин."""
+    cl.load_settings(SESSION_FILE)
+    cl.get_timeline_feed()
 
 def build_client():
+    """Загружает сессию из файла. Если сессии нет или она мертва — бросает ошибку.
+    Никогда не пытается сделать cl.login() с сервера — это всегда провалится."""
+    if not SESSION_FILE.exists():
+        raise RuntimeError("ig_session.json не найден")
+
     cl = Client()
     cl.delay_range = [2, 5]
     if IG_PROXY:
         cl.set_proxy(IG_PROXY)
         print(f"  Прокси: {IG_PROXY.split('@')[-1]}")
 
-    # Попытка с сохранённой сессией
-    if SESSION_FILE.exists():
-        try:
-            with ThreadPoolExecutor(max_workers=1) as ex:
-                fut = ex.submit(_do_login, cl, False)
-                fut.result(timeout=LOGIN_TIMEOUT)
-            print("  Сессия восстановлена")
-            return cl
-        except FuturesTimeout:
-            print(f"  Таймаут восстановления сессии ({LOGIN_TIMEOUT}с), перелогин...")
-        except Exception as e:
-            err = str(e)
-            print(f"  Сессия устарела ({err[:100]}), перелогин...")
-            # Если Instagram не находит аккаунт по username — не удаляем сессию,
-            # это может быть временная ошибка API. Ждём и пробуем снова.
-            if "can't find an account" in err.lower() or "unknown" in err.lower():
-                print("  Временная ошибка Instagram API — сохраняю сессию, жду...")
-                raise RuntimeError(f"Временная ошибка Instagram API: {err}")
-        _backup_session()
-        SESSION_FILE.unlink(missing_ok=True)
-        cl = Client()
-        cl.delay_range = [2, 5]
-
-    # Свежий логин
     try:
         with ThreadPoolExecutor(max_workers=1) as ex:
-            fut = ex.submit(_do_login, cl, True)
+            fut = ex.submit(_do_login, cl)
             fut.result(timeout=LOGIN_TIMEOUT)
-        print("  Новая сессия сохранена")
+        print("  Сессия восстановлена")
         return cl
     except FuturesTimeout:
-        raise RuntimeError(f"Логин завис (>{LOGIN_TIMEOUT}с). Проверь интернет / 2FA.")
+        raise RuntimeError("Таймаут проверки сессии — Instagram не отвечает")
     except Exception as e:
-        raise RuntimeError(f"Ошибка логина: {e}")
+        raise RuntimeError(f"Сессия недействительна: {e}")
 
 # ── Основной цикл ────────────────────────────────────────────────────────
 def run():
